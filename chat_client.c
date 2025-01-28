@@ -55,6 +55,13 @@ void *recieve_messages(void *arg) {
 }
 
 int main(int argc, char *argv[]) {
+
+  if (argc != 4) {
+    printf("Incorrect argument count.\n");
+    printf("chat_client <address> <port> <username>\n");
+    exit(1);
+  }
+
   int sockfd = open_socket(argv[1], argv[2]);
   
   // start a thread to read in input
