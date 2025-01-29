@@ -17,7 +17,7 @@ int open_socket(char *address, char *port) {
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
-  
+
   if (getaddrinfo(address, port, &hints, &res)) {
     fprintf(stderr, "Something went wrong getting the address\n");
     exit(1);
@@ -56,14 +56,26 @@ void *recieve_messages(void *arg) {
 
 int main(int argc, char *argv[]) {
 
-  if (argc != 4) {
+  if (argc != 3) {
     printf("Incorrect argument count.\n");
-    printf("chat_client <address> <port> <username>\n");
+    printf("chat_client <address> <port>\n");
     exit(1);
   }
 
   int sockfd = open_socket(argv[1], argv[2]);
   
+  // gather and send username
+  char username[17];
+  memset(username, 0, sizeof(username));
+  printf("Enter a username: (max 16 chars) ");
+  if (fgets(username, sizeof(username), stdin) == NULL) {
+      printf("Something went wrong while reading input\n");
+      exit(1);
+  }
+
+  username[sizeof(username) - 1] = '\n';
+  send(sockfd, username, strlen(username), 0);
+
   // start a thread to read in input
   pthread_t recieve;
   if (pthread_create(&recieve, NULL, recieve_messages, &sockfd)) {
@@ -72,15 +84,6 @@ int main(int argc, char *argv[]) {
   }
   
   char msg[BUFF_SIZE];
-  printf("Enter a message\n");
-  
-  char username[strlen(argv[3]) + 1];
-  strcpy(username, argv[3]);
-  username[sizeof(username) - 1] = '\n';
-  printf("Username: %s", username);
-  
-  send(sockfd, username, sizeof(username), 0);
-
   while (1) {
     memset(msg, 0, sizeof(msg));
     // get message from stdin
