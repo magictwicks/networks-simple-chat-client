@@ -7,5 +7,5 @@ This program requires gcc. Ensure it is installed before attempting to build.
 Run `make` in the project directory.
 
 ## Running
-After building, run `./chat_client <address> <port> <username>` to start the chat client. 
+After building, run `./chat_client <address> <port>` to start the chat client. 
 Exit the program with ctrl+c. 
